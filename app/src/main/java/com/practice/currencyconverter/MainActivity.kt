@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ed2: EditText
     private lateinit var spinner1: Spinner
     private lateinit var spinner2: Spinner
+    private lateinit var tvExchangeRate: TextView
     private lateinit var conversionRates: Map<String, Double>
 
     // Cờ để theo dõi việc cập nhật EditText
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         ed2 = findViewById(R.id.ed2)
         spinner1 = findViewById(R.id.spinner1)
         spinner2 = findViewById(R.id.spinner2)
+        tvExchangeRate = findViewById(R.id.tvExchangeRate)
 
         // Set default value for ed1
         ed1.setText("0.0")
@@ -92,6 +94,9 @@ class MainActivity : AppCompatActivity() {
         isUpdatingEd2 = true
         ed2.setText(String.format("%.2f", convertedAmount))
         isUpdatingEd2 = false
+
+        // Cập nhật hiển thị tỷ giá
+        updateExchangeRateDisplay()
     }
 
     private fun convertCurrencyFromEd2() {
@@ -109,6 +114,9 @@ class MainActivity : AppCompatActivity() {
         isUpdatingEd1 = true
         ed1.setText(String.format("%.2f", convertedAmount))
         isUpdatingEd1 = false
+
+        // Cập nhật hiển thị tỷ giá
+        updateExchangeRateDisplay()
     }
 
     private fun createConversionListener() = object : AdapterView.OnItemSelectedListener {
@@ -116,8 +124,18 @@ class MainActivity : AppCompatActivity() {
             // Gọi cả hai phương thức chuyển đổi khi spinner thay đổi
             convertCurrencyFromEd1() // Chuyển đổi khi spinner 1 thay đổi
             convertCurrencyFromEd2() // Chuyển đổi khi spinner 2 thay đổi
+            updateExchangeRateDisplay() // Cập nhật hiển thị tỷ giá
         }
 
         override fun onNothingSelected(parent: AdapterView<*>) {}
+    }
+
+    private fun updateExchangeRateDisplay() {
+        val fromCurrency = spinner1.selectedItem.toString()
+        val toCurrency = spinner2.selectedItem.toString()
+        val rate = conversionRates[toCurrency]!! / conversionRates[fromCurrency]!!
+
+        // Cập nhật hiển thị tỷ giá
+        tvExchangeRate.text = "1 $fromCurrency = ${String.format("%.2f", rate)} $toCurrency"
     }
 }
